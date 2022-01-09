@@ -1,0 +1,23 @@
+Package: SittingCircles
+Title: An app to facilitate Sit-heads Sitting Circles
+Version: 0.0.0.9000
+Authors@R: person('Stephen', 'Holsenbeck', email = 'sholsen@alumni.emory.edu', role = c('cre', 'aut'))
+Description: Allows Sit-heads to add the times in which they which to practice meditation and be grouped with other meditators with similar times
+License: AGPL (>= 3)
+Imports: 
+    attempt,
+    bs4Dash,
+    config (>= 0.3.1),
+    DT,
+    glue,
+    golem (>= 0.3.1.9003),
+    htmltools,
+    shiny (>= 1.7.1)
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.2
+URL: yogat3ch/SittingCircles
+BugReports: yogat3ch/SittingCircles/issues
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
