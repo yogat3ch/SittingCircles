@@ -6,14 +6,15 @@
 #' @noRd
 app_server <- function( input, output, session ) {
   # Your application server logic 
-  .GlobalEnv$user_profile <- rv(
+  
+  
+   assign("active", rv(), envir = .GlobalEnv)
+  active$user_profile <- rv(
     first_name = NULL,
     last_name = NULL,
     email = NULL,
     admin = FALSE
   )
-  
-   active <<- rv()   
    observe({
      active$ui <- paste0("mod_body_", input$active_tab, "_ui")
      active$server <-  paste0("mod_body_", input$active_tab, "_server")

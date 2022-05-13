@@ -36,39 +36,7 @@ mod_navbar_ui <- function(id){
 mod_navbar_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
-    observeEvent(input$profile, {
-      shiny::showModal(
-        modalDialog(
-          title = "My Profile",
-          fluidRow(
-            bs4Dash::column(6,
-                            shiny::textInput("first_name",
-                                             "First Name",
-                                             width = "100%")),
-            bs4Dash::column(6,
-                            shiny::textInput("last_name",
-                                             "Last Name",
-                                             width = "100%"))
-          ),
-          fluidRow(
-            bs4Dash::column(6,
-                            shiny::textInput("email",
-                                             "Email Address",
-                                             width = "100%")),
-            bs4Dash::column(6, class = "text-center",
-                            bs4Dash::actionButton("profile_save",
-                                                  "Save Profile",
-                                                  style = "margin-top: 30px;",
-                                                  icon = shiny::icon("save"),
-                                                  width = "200px",
-                                                  status = "primary"
-                            ))
-            
-          )
-        )
-      )
-    })
-    golem::invoke_js("clickon", "#navbar-profile")
+    
   })
 }
     

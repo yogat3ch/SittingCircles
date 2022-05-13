@@ -9,11 +9,11 @@ app_ui <- function(request) {
     # Leave this function for adding external resources
     golem_add_external_resources(),
     # Your application UI logic 
-    bs4Dash::bs4DashPage("Sitting Circles",
+    bs4Dash::bs4DashPage(title = "Sitting Circles",
                          skin = "light",
-      mod_navbar_ui("navbar"),
-      mod_sidebar_ui("sidebar"),
-      mod_body_ui("body")
+      header = mod_navbar_ui("navbar"),
+      sidebar = mod_sidebar_ui("sidebar"),
+      body = mod_body_ui("body")
     )
   )
 }
