@@ -5,33 +5,14 @@ ui_picker_tz <- function(ns = rlang::caller_env()$ns) {
                         "Timezone",
                         choices = tzs,
                         selected = "",
-                        choicesOpt = shinyWidgets::pickerOptions(
+                        options = shinyWidgets::pickerOptions(
                           liveSearch = TRUE,
                           liveSearchStyle = "contains"
                         ))
                  
 }
 
-ui_picker_time <- function(numInputs = 1, ns = rlang::caller_env()$ns) {
-  ui_row(box = FALSE,
-         col_3(
-           shinyTime::timeInput(ns("time"),
-                                "Beginning",
-                                seconds = FALSE)
-         ),
-         col_3(
-           shinyTime::timeInput(ns("time"),
-                                "End",
-                                seconds = FALSE)
-         ),
-         col_1(
-           bs4Dash::actionButton(ns("add_time"),
-                                 shiny::icon("square-plus"))
-         )
-         )
-  
-  
-}
+
 
 #' @title A default full width row box.
 #' @inheritParams bs4Dash::box
@@ -63,7 +44,7 @@ ui_row <- function(...,
                    id = NULL,
                    box = TRUE
 ) {
-  .dots <- rlang::dots_list(...)
+  .dots <- suppressWarnings(rlang::dots_list(...))
   .args <- list(title = title,
                 footer = footer,
                 status = status,
@@ -94,5 +75,12 @@ ui_row <- function(...,
     ))
   } else
     out <- NULL
+  
   out
 }
+
+
+
+use_login <- function(x = getOption("use_login", FALSE)) {
+  x
+} 

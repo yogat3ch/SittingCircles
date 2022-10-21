@@ -6,7 +6,9 @@
 #' @noRd
 app_server <- function( input, output, session ) {
   # Your application server logic 
+  google_auth()
   
+  .GlobalEnv$db <- purrr::map(rlang::set_names(c("users", "session_ids")), ~googlesheets4::read_sheet(db_id, sheet = .x))
   
    assign("active", rv(), envir = .GlobalEnv)
   active$user_profile <- rv(

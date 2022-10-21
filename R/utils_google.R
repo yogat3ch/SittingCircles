@@ -4,7 +4,8 @@ google_auth <- function(path = "inst/vault/rstudio@adept-eon-198316.iam.gservice
 
 google_auth()
 db_id <- "https://docs.google.com/spreadsheets/d/1V7Te0zUG-IVRO9bZfZhF2r91Fz_GHdZi2Vn5-eQzQVo/edit#gid=956988236"
-db <- purrr::map(rlang::set_names(c("users", "session_ids")), ~googlesheets4::read_sheet(db_id, sheet = .x))
+# This function must return a data.frame with columns user and sessionid  Other columns are also okay
+# and will be made available to the app after log in as columns in credentials()$user_auth
 
 db_sessionid_set <- function(user, sessionid) {
   googlesheets4::sheet_append(db_id,
@@ -12,14 +13,15 @@ db_sessionid_set <- function(user, sessionid) {
                               sheet = "session_ids")
 }
 
-# This function must return a data.frame with columns user and sessionid  Other columns are also okay
-# and will be made available to the app after log in as columns in credentials()$user_auth
 
-db_sessionid_get <- function(conn = db$session_ids, expiry = 7) {
+db_sessionid_get <- function(conn = db$session_ids, user, expiry = 7) {
   conn |> 
-    dplyr::filter(login_time > Sys.time() - lubridate::days(expiry))
+    dplyr::filter(login_time > Sys.time() - lubridate::days(expiry) & user == user)
 }
 
+db_has_recent_session <- function(user) {
+  db_sessionid_get(user = user)
+}
 #' Which row is the user on in the DB
 #'
 #' @param email \code{chr} User email address
