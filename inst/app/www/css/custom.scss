@@ -1,3 +1,81 @@
+@import 'inst/app/www/css/_bootstrap-variables.scss';
 .shiny-output-error {
   color: red !important;
+}
+@media (min-width: 992px) {
+  .sidebar {
+    padding-left: 0px;
+    padding-right: 0px;
+    margin-top: 2vh;
+    width: 100%;
+  }
+  .sidebar-mini.sidebar-collapse {
+    & .main-sidebar {
+      margin-left: 0;
+      width: 6rem;
+    }
+    & .content-wrapper, .main-header {
+      margin-left: 5rem !important;
+    }
+  }
+}
+
+// Fix the alignment of sidebar text & hide it when minimized
+@mixin nav-p {
+  & .nav-sidebar {
+    & .nav-item {
+      margin-bottom: 6vh;
+      & .nav-icon {
+        margin-right: 2rem;
+        margin-left:.5rem;
+      }
+      & .nav-link {
+        white-space: normal;
+        & span {
+          @content;
+        }
+      }
+    }
+  }
+}
+.sidebar-mini {
+  &.sidebar-collapse {
+    & .main-sidebar {
+      &:hover {
+        @include nav-p {
+          display: inline !important;
+        } 
+      }
+      &:not(:hover) {
+        @include nav-p {
+          display: none;
+        } 
+      }
+    }
+  }
+  & .main-sidebar {
+    @include nav-p {
+      display: inline;
+    }
+    & .nav-sidebar {
+      & .nav-item {
+        & .nav-link {
+          &.active {
+            background-color: $primary;
+            & span {
+              color: $black;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.time_input {
+  height: 36px;
+}
+
+.day_input {
+  border-radius: 4px;
 }

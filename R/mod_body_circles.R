@@ -10,7 +10,7 @@
 mod_body_circles_ui <- function(id){
   ns <- NS(id)
   tagList(
-    mod_time_picker_ui(ns("times"))
+    
   )
 }
     
@@ -20,7 +20,7 @@ mod_body_circles_ui <- function(id){
 mod_body_circles_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
-    mod_time_picker_server("times")
+    
   })
 }
     

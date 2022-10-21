@@ -6,7 +6,7 @@ Description: Allows Sit-heads to add the times in which they which to practice m
 License: AGPL (>= 3)
 Imports: 
     attempt,
-    bs4Dash,
+    bs4Dash (>= 2.1.0),
     config (>= 0.3.1),
     DT,
     glue,
@@ -24,4 +24,5 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Remotes:  
-    Martin-McCoy/shinyVirga
+    Martin-McCoy/shinyVirga,
+    yogat3ch/bs4Dash

@@ -12,11 +12,8 @@ mod_time_picker_ui <- function(id){
   tagList(
     shinyVirga::browser_ui(),
     ui_row(
-      ui_row(
-        tags$h4("Preferred times to meditate"),
-        tags$em("All times in 24hr format.")
-      ,
-      box = FALSE),
+      title = "Preferred times to meditate",
+      tags$em("All times in 24hr format."),
       ui_row(
         col_10(
           uiOutput(ns("time_picker"))
@@ -30,21 +27,20 @@ mod_time_picker_ui <- function(id){
         )
         , box = FALSE
       ),
-      ui_row(
+      fluidRow(
         bs4Dash::actionButton(
           ns("save_time"),
           "Save",
           shiny::icon("floppy-disk"),
           size = "lg",
           width = "100%"
-        ),
-        box = FALSE
+        )
       )
     )
   )
 }
 
-ui_picker <- function(id_suffix = 1, day = NULL, begin = NULL, end = NULL, session = shiny::getDefaultReactiveDomain()) {
+ui_picker <- function(id_suffix = 1, day = "Monday", begin = NULL, end = NULL, session = shiny::getDefaultReactiveDomain()) {
   ns <- session$ns
   ui_row(
     box = FALSE,
@@ -54,27 +50,62 @@ ui_picker <- function(id_suffix = 1, day = NULL, begin = NULL, end = NULL, sessi
         label = "Day of week",
         choices = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"),
         selected = day
-      )
+      ) |> 
+        htmltools::tagAppendAttributes(class = "day_input", .cssSelector = ".vscomp-toggle-button")
     ),
     col_4(
-      shinyTime::timeInput(ns(paste0("begin", id_suffix)),
-                           "Beginning",
-                           seconds = FALSE,
-                           minute.steps = 5,
-                           value = begin
-                           )
+      htmltools::tagAppendAttributes(shinyTime::timeInput(ns(paste0("begin", id_suffix)),
+                                                          "Beginning",
+                                                          seconds = FALSE,
+                                                          minute.steps = 5,
+                                                          value = begin
+      ), class = "time_input", .cssSelector = ".input-group > input")
     ),
     col_4(
       shinyTime::timeInput(ns(paste0("end", id_suffix)),
                            "End",
                            seconds = FALSE,
                            minute.steps = 5,
-                           value = end)
+                           value = end) |> 
+        htmltools::tagAppendAttributes(class = "time_input", .cssSelector = ".input-group > input")
     )
   )
 }
+#' Convert between tibble and character representations of time
+#'
+#' @param x \code{tbl/chr} tbl with columns day, begin, end. chr in the format `"Mon_4:0_4:0"`
+#'
+#' @return \code{tbl/chr}
+#' @export
+#'
+
+time_handler <- function(x) {
+  UseMethod("time_handler")
+}
+#' @export
+time_handler.data.frame <- function(x) {
+  out <- purrr::pmap(x, ~{
+    .vars <- list(...)
+    glue::glue_collapse(c(.vars$day, purrr::map_chr(
+      .vars[c("begin",
+              "end")], ~
+        paste0(lubridate::hour(.x), ":", lubridate::minute(.x))
+    )), sep = "_")
+  }) |> 
+    glue::glue_collapse(sep = "|")
+}
+#' @export
+time_handler.character <- function(x) {
+  times <- stringr::str_split(x, "\\|")[[1]] |> 
+    stringr::str_split("\\_")
+  week_begin <- lubridate::floor_date(lubridate::today(), "week")
+  purrr::map_dfr(times, ~{
+    dow <- week_begin + lubridate::days(UU::week_factor(.x[1]) - 1)
+      tibble::tibble_row(day = .x[1], !!!rlang::set_names(dow + lubridate::hm(.x[2:3]), c("begin", "end")))
+  })
+}
 .time_segs <- c("day", "begin", "end")
-ui_picker_gatherer <- function(max_inputs = 20, session = shiny::getDefaultReactiveDomain()) {
+ui_picker_gatherer <- function(max_inputs = 20, session = shiny::getDefaultReactiveDomain(), e = rlang::caller_env()) {
   reactive({
     i = 1
     out <- list()
@@ -83,6 +114,8 @@ ui_picker_gatherer <- function(max_inputs = 20, session = shiny::getDefaultReact
         out <- session$input[[.x]]
         if (lubridate::is.POSIXlt(out))
           out <- lubridate::force_tz(out, tzone = "UTC")
+        else
+          substr(out, 0, 3)
         }))
       i <- i + 1
     }
@@ -94,8 +127,8 @@ ui_picker_gatherer <- function(max_inputs = 20, session = shiny::getDefaultReact
       out <- tibble::tibble_row(day = "Monday", begin = time, end = time)
     }
       
-    tibble::rownames_to_column(dplyr::bind_rows(out), var = "i")
-  })
+    dplyr::bind_rows(out)
+  }, env = e)
   
 }
 #' time_picker Server Functions
@@ -110,6 +143,12 @@ mod_time_picker_server <- function(id){
     max_inputs <- 20
     times <- ui_picker_gatherer()
     time_save <- reactiveVal()
+    observeEvent(input$save_time, {
+      times()
+      
+      
+      # TODO Write all times to the spreadsheet
+    })
     time_pickers <- eventReactive(input$add_time, {
       
       total_inputs <- initial_inputs + (input$add_time %||% 0)
@@ -132,10 +171,11 @@ mod_time_picker_server <- function(id){
         )
       }
       out
-    }, ignoreInit = FALSE)
+    }, ignoreNULL = FALSE)
     output$time_picker <- renderUI({
       time_pickers()
     })
+    
     shinyVirga::browser_server()
   })
 }

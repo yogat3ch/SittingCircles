@@ -29,10 +29,6 @@ mod_body_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     e <- environment()
-    observeEvent(input$browser,
-                 {
-                   browser()
-                 })
     
     output$bodyui <- renderUI({
       req(active$ui)
