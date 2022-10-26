@@ -39,3 +39,4 @@ vignettes/*.pdf
 
 inst/vault/
 .reprex/
+inst/app/www/css/.sass_cache_keys
