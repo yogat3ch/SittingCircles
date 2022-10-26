@@ -15,25 +15,36 @@ mod_time_picker_ui <- function(id){
       title = "Preferred times to meditate",
       tags$em("All times in 24hr format."),
       ui_row(
-        col_10(
+        col_12(
           uiOutput(ns("time_picker"))
+        ),
+        box = FALSE
+      ),
+      footer = fluidRow(
+        col_6(),
+        col_2(
+          bs4Dash::actionButton(
+            ns("subtract_time"),
+            "Subtract a time",
+            icon = shiny::icon("minus"),
+            width = "100%"
+          )
         ),
         col_2(
           bs4Dash::actionButton(
             ns("add_time"),
-            "Add more times",
-            icon = shiny::icon("plus")
+            "Add another time",
+            icon = shiny::icon("plus"),
+            width = "100%"
           )
-        )
-        , box = FALSE
-      ),
-      fluidRow(
-        bs4Dash::actionButton(
-          ns("save_time"),
-          "Save",
-          shiny::icon("floppy-disk"),
-          size = "lg",
-          width = "100%"
+        ),
+        col_2(
+          bs4Dash::actionButton(
+            ns("save_time"),
+            "Save",
+            shiny::icon("floppy-disk"),
+            width = "100%"
+          ) 
         )
       )
     )
@@ -86,7 +97,7 @@ time_handler <- function(x) {
 time_handler.data.frame <- function(x) {
   out <- purrr::pmap(x, ~{
     .vars <- list(...)
-    glue::glue_collapse(c(.vars$day, purrr::map_chr(
+    glue::glue_collapse(c(substr(.vars$day, 0, 3), purrr::map_chr(
       .vars[c("begin",
               "end")], ~
         paste0(lubridate::hour(.x), ":", lubridate::minute(.x))
@@ -105,6 +116,21 @@ time_handler.character <- function(x) {
   })
 }
 .time_segs <- c("day", "begin", "end")
+
+time_rows <- function(x = 1) {
+  time <- lubridate::today(tzone = "UTC")
+  lubridate::hour(time) <- 0
+  lubridate::minute(time) <- 0
+  lubridate::second(time) <- 1
+  out <- tibble::tibble_row(day = "Monday", begin = time, end = time)
+  if (x > 1)
+    out <- dplyr::bind_rows(
+      out,
+      out[rep(1, x - 1),]
+    )
+  return(out)
+}
+
 ui_picker_gatherer <- function(max_inputs = 20, session = shiny::getDefaultReactiveDomain(), e = rlang::caller_env()) {
   reactive({
     i = 1
@@ -115,16 +141,12 @@ ui_picker_gatherer <- function(max_inputs = 20, session = shiny::getDefaultReact
         if (lubridate::is.POSIXlt(out))
           out <- lubridate::force_tz(out, tzone = "UTC")
         else
-          substr(out, 0, 3)
+          out
         }))
       i <- i + 1
     }
     if (rlang::is_empty(out)) {
-      time <- lubridate::today(tzone = "UTC")
-      lubridate::hour(time) <- 4
-      lubridate::minute(time) <- 0
-      lubridate::second(time) <- 0
-      out <- tibble::tibble_row(day = "Monday", begin = time, end = time)
+      out <- time_rows()
     }
       
     dplyr::bind_rows(out)
@@ -139,41 +161,38 @@ mod_time_picker_server <- function(id){
     ns <- session$ns
     # Load saved times
     
-    initial_inputs <- 1
-    max_inputs <- 20
+    times_df <- reactiveVal(
+      time_rows()
+    )
+    times_max <- 20
     times <- ui_picker_gatherer()
-    time_save <- reactiveVal()
+    
     observeEvent(input$save_time, {
-      times()
-      
-      
+      times_df(times())
+      browser()
       # TODO Write all times to the spreadsheet
     })
-    time_pickers <- eventReactive(input$add_time, {
-      
-      total_inputs <- initial_inputs + (input$add_time %||% 0)
-      
-      if (total_inputs > 20) {
-        shinyWidgets::sendSweetAlert(
-          title = "Max times reached",
-          type = "error"
+    observeEvent(input$add_time, {
+      times_df(
+        dplyr::bind_rows(
+          times_df(),
+          time_rows()
         )
-        total_inputs = 20
-      }
-      out <- tagList()
-      
-      for (i in initial_inputs:total_inputs) {
-        out <- tagAppendChild(out,
-                              ui_picker(id_suffix = i,
-                                        day = times()$day[i] %|try|% NULL,
-                                        begin = times()$begin[i] %|try|% NULL,
-                                        end = times()$end[i] %|try|% NULL)
-        )
-      }
-      out
-    }, ignoreNULL = FALSE)
+      )
+    })
+    observeEvent(input$subtract_time, {
+      times_df(
+        times_df()[-nrow(times_df()),]
+      )
+    })
+    
     output$time_picker <- renderUI({
-      time_pickers()
+      tibble::rownames_to_column(times_df(), var = "id_suffix") |> 
+        purrr::pmap(~{
+          .x <- list(...)
+          do.call(ui_picker, .x)
+        }) |> 
+        tagList()
     })
     
     shinyVirga::browser_server()
