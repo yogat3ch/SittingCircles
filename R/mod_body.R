@@ -170,13 +170,22 @@ mod_body_server <- function(id){
       shinyjs::delay(1500, shiny::removeModal())
     })
     
-    observeEvent(credentials()$user_auth, {
-      shiny::removeModal()
-    })
+    if (opts$use_login()) {
+      observeEvent(credentials()$user_auth, {
+        req(credentials()$user_auth)
+        shiny::removeModal()
+        active$user <- input$`login-user_name`
+        times <- user_times(active$user)
+        active$times_df <- reactiveVal(
+          times
+        )
+      })
+    } 
+    
     
     observeEvent(input$loaded, {
       
-      if (isTRUE(credentials()$user_auth == FALSE) && use_login())
+      if (isTRUE(credentials()$user_auth == FALSE) && opts$use_login())
         shiny::showModal(login_dialog, session = session)
       # This has to be here because it's otherwise hidden.
       toggle_login_screen()
