@@ -11,17 +11,26 @@ app_server <- function( input, output, session ) {
   .GlobalEnv$db <- purrr::map(rlang::set_names(c("users", "session_ids")), ~googlesheets4::read_sheet(db_id, sheet = .x))
   
    assign("active", rv(), envir = .GlobalEnv)
-  active$user_profile <- rv(
-    first_name = NULL,
-    last_name = NULL,
-    email = NULL,
-    admin = FALSE
-  )
+  
    observe({
      active$ui <- paste0("mod_body_", input$active_tab, "_ui")
      active$server <-  paste0("mod_body_", input$active_tab, "_server")
      active$tab <- input$active_tab
      active$dark_mode <- input$dark_mode
+     active$user_profile <- rv(
+       first_name = NULL,
+       last_name = NULL,
+       email = NULL,
+       admin = FALSE
+     )
+     if (!opts$use_login()) {
+       active$user <- "stephen"
+       times <- user_times(active$user)
+       active$times_df <- reactiveVal(
+         times
+       )
+     } else 
+       active$user <- NULL
    })
    # Top-level Modules
    mod_navbar_server("navbar")
