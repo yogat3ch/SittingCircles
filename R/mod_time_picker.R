@@ -95,8 +95,7 @@ time_handler <- function(x) {
 }
 #' @export
 time_handler.data.frame <- function(x) {
-  out <- purrr::pmap(x, ~{
-    .vars <- list(...)
+  slider::slide(x, \(.vars) {
     glue::glue_collapse(c(substr(.vars$day, 0, 3), purrr::map_chr(
       .vars[c("begin",
               "end")], ~
