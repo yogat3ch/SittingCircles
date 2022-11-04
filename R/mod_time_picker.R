@@ -160,37 +160,41 @@ mod_time_picker_server <- function(id){
     ns <- session$ns
     # Load saved times
     
-    times_df <- reactiveVal(
-      time_rows()
-    )
+   
     times_max <- 20
     times <- ui_picker_gatherer()
     
     observeEvent(input$save_time, {
-      times_df(times())
-      browser()
-      # TODO Write all times to the spreadsheet
+      virgaUtils::dbg_msg("time_picker: save_time")
+      active$times_df(times())
+      .row <- db_filter(user = active$user)
+      .row$times <- time_handler(active$times_df())
+      db_row_update(.row)
+      shinyVirga::js_after(
+        "save_time",
+        tags$span("Times successfully saved to database!"),
+        status = "success"
+      )
+      
     })
     observeEvent(input$add_time, {
-      times_df(
+      active$times_df(
         dplyr::bind_rows(
-          times_df(),
+          times(),
           time_rows()
         )
       )
     })
     observeEvent(input$subtract_time, {
-      times_df(
-        times_df()[-nrow(times_df()),]
+      active$times_df(
+        active$times_df()[-nrow(active$times_df()),]
       )
     })
     
     output$time_picker <- renderUI({
-      tibble::rownames_to_column(times_df(), var = "id_suffix") |> 
-        purrr::pmap(~{
-          .x <- list(...)
-          do.call(ui_picker, .x)
-        }) |> 
+      req(active$times_df)
+      tibble::rownames_to_column(active$times_df(), var = "id_suffix") |> 
+        slider::slide(~do.call(ui_picker, .x)) |> 
         tagList()
     })
     
