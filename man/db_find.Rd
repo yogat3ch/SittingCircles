@@ -4,7 +4,12 @@
 \alias{db_find}
 \title{Which row is the user on in the DB}
 \usage{
-db_find(x, out_type = logical(), col = c("email", "user")[1])
+db_find(
+  x,
+  out_type = logical(),
+  col = c("email", "user")[1],
+  db = virgaUtils::get_global("db")$user
+)
 }
 \arguments{
 \item{out_type}{\code{obj} of type corresponding to output}

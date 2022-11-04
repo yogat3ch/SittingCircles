@@ -9,6 +9,31 @@
     ]
   },
   "Packages": {
+    "BOR": {
+      "Package": "BOR",
+      "Version": "0.0.0.9000",
+      "Source": "GitHub",
+      "Remotes": "yogat3ch/UU",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "BOR",
+      "RemoteUsername": "Martin-McCoy",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "b3194216310c48b254fe2ba03ba604138eb6a7f9",
+      "Hash": "93f083ab7a5e071f5f95e15dff291ac8",
+      "Requirements": [
+        "UU",
+        "cli",
+        "curl",
+        "dplyr",
+        "glue",
+        "httr",
+        "purrr",
+        "rlang",
+        "rvest",
+        "xml2"
+      ]
+    },
     "DT": {
       "Package": "DT",
       "Version": "0.23",
@@ -1083,6 +1108,25 @@
         "xml2"
       ]
     },
+    "rvest": {
+      "Package": "rvest",
+      "Version": "1.0.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "a4a5ac819a467808c60e36e92ddf195e",
+      "Requirements": [
+        "cli",
+        "glue",
+        "httr",
+        "lifecycle",
+        "magrittr",
+        "rlang",
+        "selectr",
+        "tibble",
+        "withr",
+        "xml2"
+      ]
+    },
     "sass": {
       "Package": "sass",
       "Version": "0.4.2",
@@ -1095,6 +1139,17 @@
         "htmltools",
         "rappdirs",
         "rlang"
+      ]
+    },
+    "selectr": {
+      "Package": "selectr",
+      "Version": "0.4-2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "3838071b66e0c566d55cc26bd6e27bf4",
+      "Requirements": [
+        "R6",
+        "stringr"
       ]
     },
     "sessioninfo": {
@@ -1149,7 +1204,7 @@
     },
     "shinyVirga": {
       "Package": "shinyVirga",
-      "Version": "0.0.3",
+      "Version": "0.0.5",
       "Source": "GitHub",
       "Remotes": "yogat3ch/UU, Martin-McCoy/virgaUtils, MangoTheCat/functionMap,\n        yogat3ch/bs4Dash",
       "RemoteType": "github",
@@ -1157,8 +1212,8 @@
       "RemoteRepo": "shinyVirga",
       "RemoteUsername": "Martin-McCoy",
       "RemoteRef": "HEAD",
-      "RemoteSha": "8c84ae2eaaf1076c80ab023d0dc476cf3db6769f",
-      "Hash": "e6484c5ddb6ac01d8869870720ba0098",
+      "RemoteSha": "23be1213e02974b7e4178619c08c7479c1fb7437",
+      "Hash": "b0a47604f3058863ab6ce0b601074b3d",
       "Requirements": [
         "UU",
         "bs4Dash",
@@ -1187,6 +1242,20 @@
         "digest",
         "jsonlite",
         "shiny"
+      ]
+    },
+    "slider": {
+      "Package": "slider",
+      "Version": "0.2.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "5237bd176dc0c4dd7eb8dcdafe514de3",
+      "Requirements": [
+        "ellipsis",
+        "glue",
+        "rlang",
+        "vctrs",
+        "warp"
       ]
     },
     "sourcetools": {
@@ -1397,6 +1466,34 @@
         "rlang"
       ]
     },
+    "virgaUtils": {
+      "Package": "virgaUtils",
+      "Version": "0.3.0",
+      "Source": "GitHub",
+      "Remotes": "yogat3ch/UU, Martin-McCoy/BOR, Martin-McCoy/virgaUtils",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "virgaUtils",
+      "RemoteUsername": "Martin-McCoy",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "024a88f7c019c00e11ed3e1d339072b8722e2e84",
+      "Hash": "3153c17e80ecf5fddab1bce9cdd98cb0",
+      "Requirements": [
+        "BOR",
+        "UU",
+        "cli",
+        "fs",
+        "glue",
+        "here",
+        "lubridate",
+        "pkgload",
+        "purrr",
+        "remotes",
+        "rlang",
+        "rstudioapi",
+        "usethis"
+      ]
+    },
     "vroom": {
       "Package": "vroom",
       "Version": "1.5.7",
@@ -1447,6 +1544,14 @@
         "rlang",
         "tibble"
       ]
+    },
+    "warp": {
+      "Package": "warp",
+      "Version": "0.2.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "2982481615756e24e79fee95bdc95daa",
+      "Requirements": []
     },
     "whisker": {
       "Package": "whisker",
