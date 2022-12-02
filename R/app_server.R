@@ -17,14 +17,10 @@ app_server <- function( input, output, session ) {
      active$server <-  paste0("mod_body_", input$active_tab, "_server")
      active$tab <- input$active_tab
      active$dark_mode <- input$dark_mode
-     active$user_profile <- rv(
-       first_name = NULL,
-       last_name = NULL,
-       email = NULL,
-       admin = FALSE
-     )
+     
      if (!opts$use_login()) {
-       active$user <- "stephen"
+       .GlobalEnv$user_profile$user <- active$user <- "stephen"
+       .GlobalEnv$user_profile$timezone <- "America/New_York"
        times <- user_times(active$user)
        active$times_df <- reactiveVal(
          times
