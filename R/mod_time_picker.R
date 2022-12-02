@@ -13,13 +13,7 @@ mod_time_picker_ui <- function(id){
     shinyVirga::browser_ui(),
     ui_row(
       title = "Preferred times to meditate",
-      tags$em("All times in 24hr format."),
-      ui_row(
-        col_12(
-          uiOutput(ns("time_picker"))
-        ),
-        box = FALSE
-      ),
+      uiOutput(ns("time_picker")),
       footer = fluidRow(
         col_6(),
         col_2(
@@ -180,22 +174,33 @@ mod_time_picker_server <- function(id){
     observeEvent(input$add_time, {
       active$times_df(
         dplyr::bind_rows(
-          times(),
+          ui_picker_gatherer(max_inputs = nrow(active$times_df())),
           time_rows()
         )
       )
     })
     observeEvent(input$subtract_time, {
       active$times_df(
-        active$times_df()[-nrow(active$times_df()),]
+        ui_picker_gatherer(max_inputs = nrow(active$times_df()) - 1)
       )
     })
     
     output$time_picker <- renderUI({
       req(active$times_df)
-      tibble::rownames_to_column(active$times_df(), var = "id_suffix") |> 
+      
+      picker <- tibble::rownames_to_column(active$times_df(), var = "id_suffix") |> 
         slider::slide(~do.call(ui_picker, .x)) |> 
         tagList()
+      tagList(
+        tags$em(HTML(glue::glue("All times in 24hr format in the <strong>{.GlobalEnv$user_profile$timezone}</strong> timezone."))),
+        ui_row(
+          col_12(
+            picker
+          ),
+          box = FALSE
+        )
+      )
+      
     })
     
     shinyVirga::browser_server()
