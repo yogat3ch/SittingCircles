@@ -1,9 +1,10 @@
-tzs <- c("", unlist(httr::content(httr::GET("http://worldtimeapi.org/api/timezone"))))
+
+ 
 
 ui_picker_tz <- function(ns = rlang::caller_env()$ns) {
   shinyWidgets::pickerInput(ns("tz"),
                         "Timezone",
-                        choices = tzs,
+                        choices = OlsonNames(),
                         selected = "",
                         options = shinyWidgets::pickerOptions(
                           liveSearch = TRUE,
