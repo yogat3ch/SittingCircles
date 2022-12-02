@@ -173,12 +173,15 @@ mod_body_server <- function(id){
     if (opts$use_login()) {
       observeEvent(credentials()$user_auth, {
         req(credentials()$user_auth)
-        shiny::removeModal()
         active$user <- input$`login-user_name`
+        up <- dplyr::select(db_filter(user = active$user), - password)
+        .GlobalEnv$user_profile <- purrr::list_modify(user_profile, !!!up)
+        
         times <- user_times(active$user)
         active$times_df <- reactiveVal(
           times
         )
+        shiny::removeModal()
       })
     } 
     
