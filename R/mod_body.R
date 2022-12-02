@@ -165,7 +165,7 @@ mod_body_server <- function(id){
       iv$enable()
       req(iv$is_valid())
       # TODO Handle existing users password recovery?
-      result <- db_user_add(input$user, input$password, input$email)
+      result <- db_user_add(input$user, input$password, input$email, input$tz)
       shinyjs::toggle("user_added", asis = TRUE)
       shinyjs::delay(1500, shiny::removeModal())
     })

@@ -65,8 +65,8 @@ db_user_exists <- function(x) {
   any(db_find(x, out_type = logical(), col = ifelse(stringr::str_detect(x, "@"), "email", "user")), na.rm = TRUE)
 }
 
-db_user_add <- function (user, password, email) {
-  .user_id <- tibble::tibble_row(user = user, password = password, email = email, admin = FALSE, times = NA_character_, circle = NA_character_)
+db_user_add <- function (user, password, email, tz) {
+  .user_id <- tibble::tibble_row(user = user, password = password, email = email, timezone = tz, admin = FALSE, times = NA_character_, circle = NA_character_)
   conds <- c(email = db_user_exists(email), user = db_user_exists(user))
   if (!any(conds)) {
     # if user nor email exists
