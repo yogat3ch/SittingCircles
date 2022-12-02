@@ -124,11 +124,11 @@ time_rows <- function(x = 1) {
   return(out)
 }
 
-ui_picker_gatherer <- function(max_inputs = 20, session = shiny::getDefaultReactiveDomain(), e = rlang::caller_env()) {
-  reactive({
+ui_picker_gatherer <- function(max_inputs = 20, session = shiny::getDefaultReactiveDomain()) {
+  
     i = 1
     out <- list()
-    while (!is.null(session$input[[paste0("day", i)]])) {
+    while (!is.null(session$input[[paste0("day", i)]]) && i <= max_inputs) {
       out[[i]] <- tibble::tibble_row(!!!purrr::map(rlang::set_names(paste0(.time_segs, i), .time_segs), ~{
         out <- session$input[[.x]]
         if (lubridate::is.POSIXlt(out))
@@ -141,9 +141,9 @@ ui_picker_gatherer <- function(max_inputs = 20, session = shiny::getDefaultReact
     if (rlang::is_empty(out)) {
       out <- time_rows()
     }
-      
+    
     dplyr::bind_rows(out)
-  }, env = e)
+  
   
 }
 #' time_picker Server Functions
@@ -156,11 +156,14 @@ mod_time_picker_server <- function(id){
     
    
     times_max <- 20
-    times <- ui_picker_gatherer()
+    
     
     observeEvent(input$save_time, {
       virgaUtils::dbg_msg("time_picker: save_time")
-      active$times_df(times())
+      t_df <- active$times_df()
+      gathered <- ui_picker_gatherer(max_inputs = nrow(t_df))
+      gathered <- dplyr::filter(gathered, lubridate::hour(begin) != 0 & lubridate::hour(end) != 0)
+      active$times_df(gathered)
       .row <- db_filter(user = active$user)
       .row$times <- time_handler(active$times_df())
       db_row_update(.row)
